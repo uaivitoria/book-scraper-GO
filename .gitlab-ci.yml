@@ -1,0 +1,83 @@
+# ============================================================
+# Pipeline GitLab CI/CD — Book Scraper Go
+# Ordem de execução: lint → test → build → deploy
+# ============================================================
+
+stages:
+  - lint
+  - test
+  - build
+  - deploy
+
+# Imagem Go usada por padrão em todos os jobs
+image: golang:1.22-alpine
+
+# Cache dos módulos Go para acelerar builds futuros
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - vendor/
+
+# Baixa as dependências antes de cada job
+before_script:
+  - go mod download
+
+# ============================================================
+# Stage 1: lint
+# Verifica boas práticas e estilo do código Go
+# ============================================================
+lint:
+  stage: lint
+  script:
+    - go vet ./...
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+# ============================================================
+# Stage 2: test
+# Roda os testes unitários
+# O job FALHA se algum teste não passar
+# ============================================================
+test:
+  stage: test
+  script:
+    - go test -v ./...
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+# ============================================================
+# Stage 3: build
+# Compila o binário e constrói a imagem Docker
+# Faz push para o GitLab Container Registry
+# ============================================================
+build:
+  stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+# ============================================================
+# Stage 4: deploy
+# Simula o deploy no AWS ECS
+# Roda APENAS na branch main
+# ============================================================
+deploy:
+  stage: deploy
+  image: alpine
+  before_script: []
+  script:
+    - echo "=== Simulando deploy no AWS ECS ==="
+    - echo "Atualizando serviço com imagem $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+    - echo "aws ecs update-service --cluster book-scraper-cluster --service book-scraper-service --force-new-deployment"
+    - echo "Deploy concluído!"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'

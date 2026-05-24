@@ -1,0 +1,13 @@
+# Binário compilado
+scraper
+scraper.exe
+
+# Arquivos gerados pelo scraper
+books.json
+books.csv
+
+# Cache de testes
+*.test
+
+# Arquivos de ambiente
+.env
