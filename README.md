@@ -73,7 +73,7 @@ docker run --rm -v $(pwd)/output:/app/output book-scraper-go
 
 ## Decisões técnicas
 
-**Go em vez de Python:** escolhi Go por ser a linguagem sugerida no desafio e por suas vantagens em performance e concorrência para automações. O binário compilado é muito mais leve e rápido que um script Python.
+**Go:** Eu já havia feito o desafio em python, mas refleti e resolvi me desafiar e fazer na linguagem sugerida pelo desafio. 
 
 **Sem frameworks externos:** usei apenas `golang.org/x/net/html` para parsing de HTML e a biblioteca padrão do Go para todo o resto. Menos dependências = menos vulnerabilidades e builds mais rápidos.
 
