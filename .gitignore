@@ -1,6 +1,6 @@
 # Binário compilado
-scraper
 scraper.exe
+/scraper
 
 # Arquivos gerados pelo scraper
 books.json
