@@ -73,7 +73,7 @@ docker run --rm -v $(pwd)/output:/app/output book-scraper-go
 
 ## Decisões técnicas
 
-**Limguagem Go:**
+**Linguagem Go:**
 O desafio sugeria Go como linguagem principal. Mesmo sem experiência prévia com a linguagem,
 decidi encarar o desafio como uma oportunidade de aprendizado real. Com o apoio de IA para
 entender a sintaxe e os conceitos, consegui desenvolver o projeto do zero e compreender o
